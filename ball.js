@@ -24,4 +24,4 @@ class Ball {
 }
 
 // makes class available in other files
-export default Ball
+export default Ball;

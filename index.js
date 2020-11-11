@@ -1,34 +1,16 @@
 import Ball from './ball.js';
-// import Brick from './brick.js';
 
+// CONSTANTS
 const canvas = document.getElementById('myCanvas');
 const ctx = canvas.getContext('2d');
-
 const ballRadius = 10;
-
 const x = canvas.width / 2;
 const y = canvas.height - 30;
 const dx = 2;
 const dy = -2;
-
-// function drawBall() {
-//     // ctx.beginPath();
-//     // ctx.arc(x, y, ballRadius, 0, Math.PI*2);
-//     // ctx.fillStyle = "#0095DD";
-//     // ctx.fill();
-//     // ctx.closePath();
-// }
 const ball = new Ball('#0095DD', ballRadius, x, y, dx, dy);
-
 const paddleHeight = 10;
 const paddleWidth = 75;
-let paddleX = (canvas.width - paddleWidth) / 2;
-
-// rightPressed and leftPressed change values so they are declared with 'let'
-let rightPressed = false;
-let leftPressed = false;
-
-
 const brickRowCount = 5;
 const brickColumnCount = 3;
 const brickWidth = 75;
@@ -36,36 +18,19 @@ const brickHeight = 20;
 const brickPadding = 10;
 const brickOffsetTop = 30;
 const brickOffsetLeft = 30;
+const bricks = [];
+const color = '#0095DD';
+const font = '16px Arial';
 
-function drawBricks() {
-  for (let c = 0; c < brickColumnCount; c += 1) {
-    for (let r = 0; r < brickRowCount; r += 1) {
-      if (bricks[c][r].status === 1) {
-        const brickX = (c * (brickWidth + brickPadding)) + brickOffsetLeft;
-        const brickY = (r * (brickHeight + brickPadding)) + brickOffsetTop;
-        bricks[c][r].x = brickX;
-        bricks[c][r].y = brickY;
-        ctx.beginPath();
-        ctx.rect(brickX, brickY, brickWidth, brickHeight);
-        ctx.fillStyle = '#0095DD';
-        ctx.fill();
-        ctx.closePath();
-      }
-    }
-  }
-}
-
+let paddleX = (canvas.width - paddleWidth) / 2;
+// rightPressed and leftPressed change values so they are declared with 'let'
+let rightPressed = false;
+let leftPressed = false;
 // value changes
 let score = 0;
 let lives = 3;
 
-const bricks = [];
-for (let c = 0; c < brickColumnCount; c += 1) {
-  bricks[c] = [];
-  for (let r = 0; r < brickRowCount; r += 1) {
-    bricks[c][r] = { x: 0, y: 0, status: 1 };
-  }
-}
+// FUNCTIONS
 
 function keyDownHandler(e) {
   if (e.key === 'Right' || e.key === 'ArrowRight') {
@@ -90,10 +55,6 @@ function mouseMoveHandler(e) {
   }
 }
 
-document.addEventListener('keydown', keyDownHandler, false);
-document.addEventListener('keyup', keyUpHandler, false);
-document.addEventListener('mousemove', mouseMoveHandler, false);
-
 function collisionDetection() {
   for (let c = 0; c < brickColumnCount; c += 1) {
     for (let r = 0; r < brickRowCount; r += 1) {
@@ -114,24 +75,42 @@ function collisionDetection() {
   }
 }
 
-
 function drawPaddle() {
   ctx.beginPath();
   ctx.rect(paddleX, canvas.height - paddleHeight, paddleWidth, paddleHeight);
-  ctx.fillStyle = '#0095DD';
+  ctx.fillStyle = color;
   ctx.fill();
   ctx.closePath();
 }
 
+function initializingBricks() {
+  for (let c = 0; c < brickColumnCount; c += 1) {
+    bricks[c] = [];
+    for (let r = 0; r < brickRowCount; r += 1) {
+      const brickX = (c * (brickWidth + brickPadding)) + brickOffsetLeft;
+      const brickY = (r * (brickHeight + brickPadding)) + brickOffsetTop;
+      bricks[c][r] = { x: brickX, y: brickY, status: 1 };
+    }
+  }
+}
+
+function drawBricks() {
+  for (let c = 0; c < brickColumnCount; c += 1) {
+    for (let r = 0; r < brickRowCount; r += 1) {
+      Bricks.render(ctx);
+    }
+  }
+}
+
 function drawScore() {
-  ctx.font = '16px Arial';
-  ctx.fillStyle = '#0095DD';
+  ctx.font = font;
+  ctx.fillStyle = color;
   ctx.fillText(`Score: ${score}`, 8, 20);
 }
 
 function drawLives() {
-  ctx.font = '16px Arial';
-  ctx.fillStyle = '#0095DD';
+  ctx.font = font;
+  ctx.fillStyle = color;
   ctx.fillText(`Lives: ${lives}`, canvas.width - 65, 20);
 }
 
@@ -151,7 +130,7 @@ function draw() {
   if (ball.y + ball.dy < ball.ballRadius) {
     ball.dy = -ball.dy;
   } else if (ball.y + ball.dy > canvas.height - ball.ballRadius) {
-    if (ball.x > paddleX && x < paddleX + paddleWidth) {
+    if (ball.x > paddleX && ball.x < paddleX + paddleWidth) {
       ball.dy = -ball.dy;
     } else {
       lives -= 1;
@@ -176,5 +155,11 @@ function draw() {
 
   requestAnimationFrame(draw);
 }
+
+initializingBricks();
+
+document.addEventListener('keydown', keyDownHandler, false);
+document.addEventListener('keyup', keyUpHandler, false);
+document.addEventListener('mousemove', mouseMoveHandler, false);
 
 draw();
